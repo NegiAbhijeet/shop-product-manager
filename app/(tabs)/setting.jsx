@@ -1,15 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import ProductForm from '@/components/productform'
 
-const index = () => {
+const setting = () => {
   return (
-    <View style={{flex:1}}>
-      <ProductForm />
+    <View>
+      <Text>setting</Text>
     </View>
   )
 }
 
-export default index
+export default setting
 
 const styles = StyleSheet.create({})

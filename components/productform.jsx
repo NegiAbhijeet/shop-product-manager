@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-
+import API_URL from "./config";
 export default function ProductForm() {
   const [formData, setFormData] = useState({
     productName: "",
@@ -33,28 +33,64 @@ export default function ProductForm() {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      mediaTypes: "Images", // Use the updated way to define media types
+      mediaTypes: "Images", // Directly specify "Images" without MediaTypeOptions
     });
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);
     }
   };
-
+  console.log(API_URL);
   const onSubmit = () => {
     const productData = {
       ...formData,
       productImage: image,
     };
 
-    Alert.alert("Product Saved", JSON.stringify(productData, null, 2));
-    setFormData({
-      productName: "",
-      productPrice: "",
-      retailPrice: "",
-      wholesalePrice: "",
+    // Ensure there's an image before submitting
+    if (!image) {
+      Alert.alert("Error", "Please select a product image.");
+      return;
+    }
+
+    // Create FormData to handle file upload
+    const form = new FormData();
+    form.append("productName", formData.productName);
+    form.append("purchasePrice", formData.productPrice);
+    form.append("retailPrice", formData.retailPrice);
+    form.append("wholesalePrice", formData.wholesalePrice);
+    form.append("productImage", {
+      uri: image,
+      name: image.split("/").pop(), // Extract filename from uri
+      type: "image", // Assuming the image is a JPEG
     });
-    setImage(null);
+
+    // The API URL where the POST request will be sent
+    const url = `${API_URL}/api/products`;
+
+    // Perform the POST request using fetch
+    fetch(url, {
+      method: "POST", // Method type (POST)
+      body: form, // Pass the FormData object as the request body
+    })
+      .then((response) => response.json()) // Parse the response as JSON
+      .then((data) => {
+        console.log("Success:", data); // Handle the successful response
+      })
+      .catch((error) => {
+        console.error("Error:", error); // Handle errors (e.g., network issues)
+      });
+
+    Alert.alert("Product Saved", JSON.stringify(productData, null, 2));
+
+    // Reset form state after submission
+    // setFormData({
+    //   productName: "",
+    //   productPrice: "",
+    //   retailPrice: "",
+    //   wholesalePrice: "",
+    // });
+    // setImage(null);
   };
 
   return (
@@ -62,7 +98,7 @@ export default function ProductForm() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView style={{ padding: 20 }}>
         <Text style={styles.header}>Add New Product</Text>
 
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>

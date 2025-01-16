@@ -9,40 +9,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 
-const EnhancedProductList = () => {
+const EnhancedProductList = ({ products, setProducts }) => {
   const [searchText, setSearchText] = useState("");
-  const [products, setProducts] = useState([
-    {
-      id: "1",
-      name: "Product A",
-      retailPrice: "$20",
-      buyPrice: "$15",
-      wholesalePrice: "$10",
-    },
-    {
-      id: "2",
-      name: "Product B",
-      retailPrice: "$40",
-      buyPrice: "$30",
-      wholesalePrice: "$25",
-    },
-    {
-      id: "3",
-      name: "Product C",
-      retailPrice: "$60",
-      buyPrice: "$50",
-      wholesalePrice: "$45",
-    },
-    {
-      id: "4",
-      name: "Product D",
-      retailPrice: "$80",
-      buyPrice: "$70",
-      wholesalePrice: "$60",
-    },
-  ]);
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchText.toLowerCase())
@@ -61,7 +30,7 @@ const EnhancedProductList = () => {
         </View>
         <View style={styles.priceContainer}>
           <Ionicons name="cart-outline" size={16} color="#4A90E2" />
-          <Text style={styles.itemText}>Buy: {item.buyPrice}</Text>
+          <Text style={styles.itemText}>Buy: {item.purchasePrice}</Text>
         </View>
         <View style={styles.priceContainer}>
           <Ionicons name="business-outline" size={16} color="#4A90E2" />
@@ -102,7 +71,7 @@ const EnhancedProductList = () => {
       <FlatList
         data={filteredProducts}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item, index) => index}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="alert-circle-outline" size={48} color="#4A90E2" />

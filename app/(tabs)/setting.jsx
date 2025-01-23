@@ -14,12 +14,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Setting = () => {
-  const [codes, setCodes] = useState(Array.from({ length: 26 }, () => ""));
+  const [codes, setCodes] = useState(Array.from({ length: 10 }, () => ""));
 
   const handleInputChange = (value, index) => {
-    const updatedCodes = [...codes];
-    updatedCodes[index] = value;
-    setCodes(updatedCodes);
+    if (value.length <= 1 && /^[A-Za-z]*$/.test(value)) {
+      const updatedCodes = [...codes];
+      updatedCodes[index] = value.toUpperCase();
+      setCodes(updatedCodes);
+    }
   };
 
   const handleSave = () => {
@@ -34,21 +36,25 @@ const Setting = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.header}>Price Code Settings</Text>
 
-        {Array.from({ length: 26 }).map((_, index) => (
-          <View key={index} style={styles.inputContainer}>
-            <Ionicons
-              name="key-outline"
-              size={24}
-              color="#4A90E2"
-              style={styles.inputIcon}
-            />
-            <TextInput
-              style={styles.input}
-              value={codes[index]}
-              onChangeText={(value) => handleInputChange(value, index)}
-              placeholder={`Code for ${String.fromCharCode(65 + index)}`}
-              placeholderTextColor="#999"
-            />
+        {Array.from({ length: 10 }).map((_, index) => (
+          <View key={index} style={styles.inputWrapper}>
+            <Text style={styles.label}>Code for {index}:</Text>
+            <View style={styles.inputContainer}>
+              <Ionicons
+                name="key-outline"
+                size={24}
+                color="#4A90E2"
+                style={styles.inputIcon}
+              />
+              <TextInput
+                style={styles.input}
+                value={codes[index]}
+                onChangeText={(value) => handleInputChange(value, index)}
+                placeholder={`Enter letter`}
+                placeholderTextColor="#999"
+                maxLength={1} // Restrict input to 1 character
+              />
+            </View>
           </View>
         ))}
 
@@ -86,10 +92,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333",
   },
+  inputWrapper: {
+    width: "100%",
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginBottom: 5,
+    color: "#555",
+  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 15,
@@ -98,14 +113,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    width: "100%",
+    height: 50,
   },
   inputIcon: {
     marginRight: 10,
   },
   input: {
     flex: 1,
-    height: 50,
     fontSize: 16,
     color: "#333",
   },

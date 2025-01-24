@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Upload",
+          title: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="house.fill" color={color} />
           ),
@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: "Products",
+          title: "",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="paperplane.fill" color={color} />
           ),
@@ -43,9 +43,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="setting"
         options={{
-          title: "Setting",
+          title: "",
           tabBarIcon: ({ color }) => (
             <Ionicons name="settings" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Calculator"
+        options={{
+          title: "",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="calculator" size={28} color={color} />
           ),
         }}
       />

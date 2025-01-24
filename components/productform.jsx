@@ -98,7 +98,7 @@ export default function ProductForm() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView style={{ padding: 20 }}>
+      <ScrollView style={{  }}>
         <Text style={styles.header}>Add New Product</Text>
 
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F7FA",
-    paddingTop: 40,
+    paddingTop: 30,
   },
   scrollContainer: {
     flex: 1,

@@ -1,20 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  StyleSheet,
+  View,
   Text,
   TextInput,
-  View,
+  Alert,
   ScrollView,
   TouchableOpacity,
-  Alert,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
+const defaultCodes = Array.from({ length: 10 }, (_, i) =>
+  String.fromCharCode(65 + i) // Generate 'A' to 'J'
+);
+
 const Setting = () => {
-  const [codes, setCodes] = useState(Array.from({ length: 10 }, () => ""));
+  const [codes, setCodes] = useState(defaultCodes);
+
+  useEffect(() => {
+    const fetchCodes = async () => {
+      try {
+        const savedCodes = await AsyncStorage.getItem("priceCodes");
+        if (savedCodes) {
+          setCodes(JSON.parse(savedCodes));
+        }
+      } catch (error) {
+        console.error("Failed to load codes from AsyncStorage", error);
+      }
+    };
+
+    fetchCodes();
+  }, []);
 
   const handleInputChange = (value, index) => {
     if (value.length <= 1 && /^[A-Za-z]*$/.test(value)) {
@@ -24,8 +44,13 @@ const Setting = () => {
     }
   };
 
-  const handleSave = () => {
-    Alert.alert("Settings Saved", JSON.stringify(codes, null, 2));
+  const handleSave = async () => {
+    try {
+      await AsyncStorage.setItem("priceCodes", JSON.stringify(codes));
+      Alert.alert("Settings Saved", JSON.stringify(codes, null, 2));
+    } catch (error) {
+      console.error("Failed to save codes to AsyncStorage", error);
+    }
   };
 
   return (
@@ -73,72 +98,58 @@ const Setting = () => {
   );
 };
 
-export default Setting;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F7FA",
-    paddingTop: 40,
+    backgroundColor: "#f4f4f4",
   },
   scrollContainer: {
-    padding: 20,
-    alignItems: "center",
+    padding: 16,
   },
   header: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 15,
     textAlign: "center",
-    color: "#333",
+    marginBottom: 16,
   },
   inputWrapper: {
-    width: "100%",
-    marginBottom: 15,
+    marginBottom: 12,
   },
   label: {
     fontSize: 16,
-    fontWeight: "500",
-    marginBottom: 5,
-    color: "#555",
+    marginBottom: 6,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 8,
   },
   inputIcon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   input: {
     flex: 1,
+    height: 40,
     fontSize: 16,
     color: "#333",
   },
   buttonWrapper: {
-    width: "100%",
-    alignItems: "center",
+    marginTop: 16,
   },
   submitButton: {
-    height: 55,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-    width: "100%",
-    marginBottom: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
   },
   submitButtonText: {
-    color: "white",
+    textAlign: "center",
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
 });
+
+export default Setting;

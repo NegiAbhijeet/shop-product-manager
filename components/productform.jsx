@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,13 +15,25 @@ import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import API_URL from "./config";
-export default function ProductForm() {
+export default function ProductForm({ params }) {
   const [formData, setFormData] = useState({
     productName: "",
     productPrice: "",
     retailPrice: "",
     wholesalePrice: "",
   });
+
+  useEffect(() => {
+    if (params?.id) {
+      setFormData({
+        productName: params.name,
+        productPrice: params.purchasePrice,
+        retailPrice: params.retailPrice,
+        wholesalePrice: params.wholesalePrice,
+      })
+      setImage(`${API_URL}/${params.image}`)
+    }
+  }, [params])
   const [image, setImage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 

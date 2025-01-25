@@ -10,28 +10,32 @@ import {
   Image, // Import Image component
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import ImageModal from "./ImageModal";
+import API_URL from "./config";
 
 const EnhancedProductList = ({ products, setProducts }) => {
   const [searchText, setSearchText] = useState("");
-
+  const router = useRouter(); // Initialize router for navigation
+  const [bigImage, setBigImage] = useState(null)
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.itemContainer}>
+    <View style={styles.itemContainer}>
       <View>
         <View style={styles.itemHeader}>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
         <View>
           <View style={styles.priceContainer}>
-            <Ionicons name="pricetag-outline" size={16} color="#4A90E2" />
-            <Text style={styles.itemText}>Retail: {item.retailPrice}</Text>
+            <Ionicons name="cart-outline" size={16} color="#4A90E2" />
+            <Text style={styles.itemText}>Price: {item.purchasePrice}</Text>
           </View>
           <View style={styles.priceContainer}>
-            <Ionicons name="cart-outline" size={16} color="#4A90E2" />
-            <Text style={styles.itemText}>Buy: {item.purchasePrice}</Text>
+            <Ionicons name="pricetag-outline" size={16} color="#4A90E2" />
+            <Text style={styles.itemText}>Retail: {item.retailPrice}</Text>
           </View>
           <View style={styles.priceContainer}>
             <Ionicons name="business-outline" size={16} color="#4A90E2" />
@@ -41,15 +45,43 @@ const EnhancedProductList = ({ products, setProducts }) => {
           </View>
         </View>
       </View>
-      <Image
-        source={{ uri: `${API_URL}/${item.image}` }} // Assuming item.imageUrl contains the image URL
+      <TouchableOpacity
         style={styles.productImage}
-      />
-    </TouchableOpacity>
+        onPress={() => setBigImage(`${API_URL}/${item.image}`)}
+      >
+        <Image
+          source={{ uri: `${API_URL}/${item.image}` }} // Assuming item.imageUrl contains the image URL
+          style={styles.productImage}
+        />
+      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={[styles.button, styles.editButton]}
+          onPress={() => {
+            router.push({
+              pathname: "/",
+              params: {
+                id: item._id,
+                name: item.name,
+                retailPrice: item.retailPrice,
+                purchasePrice: item.purchasePrice,
+                wholesalePrice: item.wholesalePrice,
+                image: item.image,
+              },
+            });
+          }}
+        >
+          <Ionicons name="create-outline" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDelete(item._id)}>
+          <Ionicons name="trash-outline" size={20} color="#FFFFFF" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
+      {bigImage && <ImageModal imageUrl={bigImage} setModalVisible={setBigImage} />}
       <Text
         style={{
           fontSize: 28,
@@ -121,6 +153,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
   },
+  buttonContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  editButton: {
+    backgroundColor: '#4A90E2', // Blue color
+  },
+  deleteButton: {
+    backgroundColor: '#E94E77', // Red color
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    marginLeft: 8, // Adds space between the icon and text
+  },
   itemContainer: {
     backgroundColor: "#fff",
     borderRadius: 10,
@@ -143,7 +197,8 @@ const styles = StyleSheet.create({
   productImage: {
     aspectRatio: 1,
     borderRadius: 5,
-    marginRight: 10,
+    height: "100%"
+    // marginRight: 10,
   },
   itemName: {
     fontSize: 18,

@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import API_URL from "./config";
@@ -29,25 +29,40 @@ export default function ProductForm() {
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      mediaTypes: "Images", // Directly specify "Images" without MediaTypeOptions
-    });
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "image/*",
+        copyToCacheDirectory: true,
+      });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      // Handle the result based on its structure
+      if (!result.canceled) {
+        // Extract the first file from the assets array
+        const file = result.assets[0];
+
+        if (file) {
+          setImage(file.uri); // Save the URI for display
+          console.log("File Details:");
+          console.log("URI:", file.uri);
+          console.log("Name:", file.name);
+          console.log("MIME Type:", file.mimeType);
+          console.log("Size (bytes):", file.size);
+        } else {
+          console.error("No file found in assets array.");
+          Alert.alert("Error", "No valid file found.");
+        }
+      } else {
+        console.log("User canceled the document picker.");
+        Alert.alert("Canceled", "You did not select a file.");
+      }
+    } catch (error) {
+      console.error("Error picking document:", error);
+      Alert.alert("Error", "Something went wrong while picking the file.");
     }
   };
+
   console.log(API_URL);
   const onSubmit = () => {
-    const productData = {
-      ...formData,
-      productImage: image,
-    };
-
-    // Ensure there's an image before submitting
     if (!image) {
       Alert.alert("Error", "Please select a product image.");
       return;
@@ -61,44 +76,44 @@ export default function ProductForm() {
     form.append("wholesalePrice", formData.wholesalePrice);
     form.append("productImage", {
       uri: image,
-      name: image.split("/").pop(), // Extract filename from uri
-      type: "image", // Assuming the image is a JPEG
+      name: image.split("/").pop(), // Extract the filename
+      type: "image/png", // Explicitly set the MIME type (adjust based on actual type)
     });
-
-    // The API URL where the POST request will be sent
-    const url = `${API_URL}/api/products`;
-
+  
+    console.log("FormData contents:");
+    for (const [key, value] of form.entries()) {
+      console.log(key, value);
+    }
+  
+    const url = `${API_URL}/api/products`;  
     // Perform the POST request using fetch
     fetch(url, {
-      method: "POST", // Method type (POST)
-      body: form, // Pass the FormData object as the request body
+      method: "POST",
+      body: form,
+      // Do NOT set Content-Type header explicitly, let fetch handle it
     })
-      .then((response) => response.json()) // Parse the response as JSON
+      .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data); // Handle the successful response
+        if (data.error) {
+          Alert.alert("Error", data.error);
+        } else {
+          Alert.alert("Success", "Product saved successfully!");
+          console.log("Success:", data);
+        }
       })
       .catch((error) => {
-        console.error("Error:", error); // Handle errors (e.g., network issues)
+        console.error("Error:", error);
+        Alert.alert("Error", "Something went wrong while saving the product.");
       });
-
-    Alert.alert("Product Saved", JSON.stringify(productData, null, 2));
-
-    // Reset form state after submission
-    // setFormData({
-    //   productName: "",
-    //   productPrice: "",
-    //   retailPrice: "",
-    //   wholesalePrice: "",
-    // });
-    // setImage(null);
   };
+  
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView style={{  }}>
+      <ScrollView style={{}}>
         <Text style={styles.header}>Add New Product</Text>
 
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
@@ -199,6 +214,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F7FA",
     paddingTop: 30,
+    paddingBottom: 80,
   },
   scrollContainer: {
     flex: 1,

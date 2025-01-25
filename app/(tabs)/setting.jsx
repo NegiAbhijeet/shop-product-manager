@@ -13,27 +13,34 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-
-const defaultCodes = Array.from({ length: 10 }, (_, i) =>
-  String.fromCharCode(65 + i) // Generate 'A' to 'J'
+const defaultCodes = Array.from(
+  { length: 10 },
+  (_, i) => String.fromCharCode(65 + i) // Generate 'A' to 'J'
 );
-
 const Setting = () => {
   const [codes, setCodes] = useState(defaultCodes);
 
   useEffect(() => {
-    const fetchCodes = async () => {
+    const initializeCodes = async () => {
       try {
         const savedCodes = await AsyncStorage.getItem("priceCodes");
-        if (savedCodes) {
+        if (!savedCodes) {
+          // If no codes are found in AsyncStorage, save the default codes
+          await AsyncStorage.setItem(
+            "priceCodes",
+            JSON.stringify(defaultCodes)
+          );
+          setCodes(defaultCodes); // Update state with the default codes
+        } else {
+          // If codes are found, load them into state
           setCodes(JSON.parse(savedCodes));
         }
       } catch (error) {
-        console.error("Failed to load codes from AsyncStorage", error);
+        console.error("Failed to initialize codes in AsyncStorage", error);
       }
     };
 
-    fetchCodes();
+    initializeCodes();
   }, []);
 
   const handleInputChange = (value, index) => {
@@ -105,6 +112,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 16,
+    paddingBottom: 80,
   },
   header: {
     fontSize: 24,

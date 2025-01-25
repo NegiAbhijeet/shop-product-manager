@@ -1,12 +1,33 @@
 import { Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
+import React, { useEffect } from "react";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
+  const defaultCodes = Array.from(
+    { length: 10 },
+    (_, i) => String.fromCharCode(65 + i) // Generate 'A' to 'J'
+  );
+  useEffect(() => {
+    const initializeCodes = async () => {
+      try {
+        const savedCodes = await AsyncStorage.getItem("priceCodes");
+        if (!savedCodes) {
+          await AsyncStorage.setItem(
+            "priceCodes",
+            JSON.stringify(defaultCodes)
+          );
+        }
+      } catch (error) {
+        console.error("Failed to initialize codes in AsyncStorage", error);
+      }
+    };
+    initializeCodes();
+  }, []);
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
@@ -14,12 +35,13 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: "absolute",
-          },
-          default: {},
-        }),
+        tabBarStyle: {
+          position: "absolute",
+          paddingBottom: 5,
+          paddingTop: 5,
+          borderTopWidth: 0,
+          backgroundColor: "white",
+        },
       })}
     >
       <Tabs.Screen

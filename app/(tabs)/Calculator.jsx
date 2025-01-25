@@ -96,7 +96,7 @@ const Calculator = () => {
         return;
       }
 
-      const codeMap = Object.fromEntries(codes.map((c, i) => [c, i])); 
+      const codeMap = Object.fromEntries(codes.map((c, i) => [c, i]));
       const decoded = code
         .toUpperCase()
         .split("")
@@ -179,20 +179,23 @@ const Calculator = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#F5F7FA",
+    padding: 20,
+    paddingTop: 75,
+    paddingBottom: 75,
   },
   tabContainer: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
     marginVertical: 10,
     backgroundColor: "#eee",
-    padding: 10,
     borderRadius: 8,
   },
   tabButton: {
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#ddd",
+    width: "48%",
   },
   activeTabButton: {
     backgroundColor: "#4A90E2",
@@ -207,7 +210,6 @@ const styles = StyleSheet.create({
   },
   calculatorContainer: {
     flex: 1,
-    padding: 16,
   },
   header: {
     fontSize: 24,

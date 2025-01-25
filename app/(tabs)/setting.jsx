@@ -65,7 +65,7 @@ const Setting = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <ScrollView>
         <Text style={styles.header}>Price Code Settings</Text>
 
         {Array.from({ length: 10 }).map((_, index) => (
@@ -108,12 +108,12 @@ const Setting = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#F5F7FA",
+    padding: 20,
+    paddingTop: 75,
+    paddingBottom: 75,
   },
-  scrollContainer: {
-    padding: 16,
-    paddingBottom: 80,
-  },
+
   header: {
     fontSize: 24,
     fontWeight: "bold",

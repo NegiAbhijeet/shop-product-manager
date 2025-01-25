@@ -23,6 +23,7 @@ export default function ProductForm() {
     wholesalePrice: "",
   });
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -61,7 +62,6 @@ export default function ProductForm() {
     }
   };
 
-  console.log(API_URL);
   const onSubmit = () => {
     if (!image) {
       Alert.alert("Error", "Please select a product image.");
@@ -79,13 +79,14 @@ export default function ProductForm() {
       name: image.split("/").pop(), // Extract the filename
       type: "image/png", // Explicitly set the MIME type (adjust based on actual type)
     });
-  
+
     console.log("FormData contents:");
     for (const [key, value] of form.entries()) {
       console.log(key, value);
     }
-  
-    const url = `${API_URL}/api/products`;  
+
+    const url = `${API_URL}/api/products`;
+    setIsLoading(true);
     // Perform the POST request using fetch
     fetch(url, {
       method: "POST",
@@ -104,9 +105,11 @@ export default function ProductForm() {
       .catch((error) => {
         console.error("Error:", error);
         Alert.alert("Error", "Something went wrong while saving the product.");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
-  
 
   return (
     <KeyboardAvoidingView
@@ -201,7 +204,9 @@ export default function ProductForm() {
             end={{ x: 1, y: 0 }}
             style={styles.submitButton}
           >
-            <Text style={styles.submitButtonText}>Save Product</Text>
+            <Text style={styles.submitButtonText}>
+              {isLoading ? "Please Wait..." : "Save Product"}
+            </Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
@@ -213,8 +218,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F7FA",
-    paddingTop: 30,
-    paddingBottom: 80,
+    padding: 20,
+    paddingVertical: 75,
   },
   scrollContainer: {
     flex: 1,

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Image, // Import Image component
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -19,24 +20,31 @@ const EnhancedProductList = ({ products, setProducts }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
-      <View style={styles.itemHeader}>
-        <Ionicons name="cube-outline" size={24} color="#4A90E2" />
-        <Text style={styles.itemName}>{item.name}</Text>
+      <View>
+        <View style={styles.itemHeader}>
+          <Text style={styles.itemName}>{item.name}</Text>
+        </View>
+        <View>
+          <View style={styles.priceContainer}>
+            <Ionicons name="pricetag-outline" size={16} color="#4A90E2" />
+            <Text style={styles.itemText}>Retail: {item.retailPrice}</Text>
+          </View>
+          <View style={styles.priceContainer}>
+            <Ionicons name="cart-outline" size={16} color="#4A90E2" />
+            <Text style={styles.itemText}>Buy: {item.purchasePrice}</Text>
+          </View>
+          <View style={styles.priceContainer}>
+            <Ionicons name="business-outline" size={16} color="#4A90E2" />
+            <Text style={styles.itemText}>
+              Wholesale: {item.wholesalePrice}
+            </Text>
+          </View>
+        </View>
       </View>
-      <View style={styles.itemDetails}>
-        <View style={styles.priceContainer}>
-          <Ionicons name="pricetag-outline" size={16} color="#4A90E2" />
-          <Text style={styles.itemText}>Retail: {item.retailPrice}</Text>
-        </View>
-        <View style={styles.priceContainer}>
-          <Ionicons name="cart-outline" size={16} color="#4A90E2" />
-          <Text style={styles.itemText}>Buy: {item.purchasePrice}</Text>
-        </View>
-        <View style={styles.priceContainer}>
-          <Ionicons name="business-outline" size={16} color="#4A90E2" />
-          <Text style={styles.itemText}>Wholesale: {item.wholesalePrice}</Text>
-        </View>
-      </View>
+      <Image
+        source={{ uri: `${API_URL}/${item.image}` }} // Assuming item.imageUrl contains the image URL
+        style={styles.productImage}
+      />
     </TouchableOpacity>
   );
 
@@ -87,17 +95,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F7FA",
-    paddingTop: 30,
-  },
-  header: {
     padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
+    paddingTop: 45,
+    paddingBottom: 45,
   },
   searchContainer: {
     flexDirection: "row",
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     marginBottom: 10,
-    marginHorizontal: 10,
     paddingHorizontal: 10,
     elevation: 2,
     shadowColor: "#000",
@@ -125,7 +124,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginHorizontal: 10,
     marginBottom: 10,
     padding: 15,
     elevation: 2,
@@ -133,21 +131,26 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   itemHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
   },
+  productImage: {
+    aspectRatio: 1,
+    borderRadius: 5,
+    marginRight: 10,
+  },
   itemName: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    marginLeft: 10,
   },
-  itemDetails: {
-    marginLeft: 34,
-  },
+
   priceContainer: {
     flexDirection: "row",
     alignItems: "center",

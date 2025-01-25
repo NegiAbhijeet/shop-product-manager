@@ -1,4 +1,3 @@
-import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import MyList from "@/components/MyList";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,6 +5,7 @@ import API_URL from "../../components/config";
 const explore = () => {
   const [products, setProducts] = useState([]);
   useEffect(() => {
+    console.log(`${API_URL}/api/products`)
     fetch(`${API_URL}/api/products`)
       .then((response) => {
         if (!response.ok) {

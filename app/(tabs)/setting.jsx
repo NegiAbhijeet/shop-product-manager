@@ -59,6 +59,15 @@ const Setting = () => {
       console.error("Failed to save codes to AsyncStorage", error);
     }
   };
+  const handleReset = async () => {
+    try {
+      await AsyncStorage.setItem("priceCodes", JSON.stringify(defaultCodes));
+      setCodes(defaultCodes);
+      Alert.alert("Settings Reset", "Codes have been reset to default.");
+    } catch (error) {
+      console.error("Failed to reset codes in AsyncStorage", error);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -92,12 +101,22 @@ const Setting = () => {
 
         <TouchableOpacity style={styles.buttonWrapper} onPress={handleSave}>
           <LinearGradient
-            colors={["#4A90E2", "#5AB9EA"]}
+            colors={["#4A90E2", "blue"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.submitButton}
           >
             <Text style={styles.submitButtonText}>Save Settings</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonWrapper} onPress={handleReset}>
+          <LinearGradient
+            colors={["orange", "red"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.submitButton}
+          >
+            <Text style={styles.submitButtonText}>Reset</Text>
           </LinearGradient>
         </TouchableOpacity>
       </ScrollView>
